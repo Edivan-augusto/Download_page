@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Distribuição de Arquivos</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root{
+      --bg:#0b0f1d; --panel:#121830; --line:#1f2746;
+      --text:#e7ebff; --muted:#9aa4c7; --acc:#3d5afe; --bad:#ff5d5d; --ok:#00bfa6; --warn:#ffb74d;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font:14px/1.45 ui-sans-serif, system-ui, Segoe UI, Roboto, Arial;
+         background:linear-gradient(180deg,var(--bg),#0e1326); color:var(--text)}
+    header{padding:16px 20px; border-bottom:1px solid var(--line); background:rgba(0,0,0,.2); position:sticky; top:0}
+    header h1{margin:0; font-size:18px}
+    main{max-width:980px; margin:24px auto; padding:0 16px}
+    .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px}
+    table{width:100%; border-collapse:collapse}
+    th,td{padding:10px 8px; border-bottom:1px solid var(--line); text-align:left; vertical-align:middle}
+    th{font-weight:600; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em}
+    a{color:var(--acc); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .badge{display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; line-height:18px; border:1px solid var(--line); color:var(--muted)}
+    .zip-ok{color:var(--ok); border-color:rgba(0,191,166,.4)}
+    .zip-bad{color:var(--bad); border-color:rgba(255,93,93,.4)}
+    .zip-warn{color:var(--warn); border-color:rgba(255,183,77,.4)}
+    .actions a{display:inline-block; padding:8px 10px; border-radius:10px; background:#0e1530; border:1px solid var(--line)}
+    .topbar{display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:12px}
+    .muted{color:var(--muted); font-size:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Distribuição de Arquivos — Railway</h1>
+  </header>
+  <main>
+    <div class="card">
+      <div class="topbar">
+        <div class="muted">Coloque seus artefatos na pasta <code>/files</code> do projeto. Eles aparecerão aqui automaticamente.</div>
+        <div class="actions">
+          <a href="/api/list" target="_blank">/api/list</a>
+          {% if has_upload %}
+          <a href="/upload">Enviar</a>
+          {% endif %}
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Tamanho</th>
+            <th>Atualizado</th>
+            <th>SHA-256 (12)</th>
+            <th>ZIP</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in files %}
+          <tr>
+            <td><a href="{{ url_for('download', filename=f.name) }}">{{ f.name }}</a></td>
+            <td>{{ f.size_h }}</td>
+            <td>{{ f.mtime_iso }}</td>
+            <td class="muted"><code>{{ f.sha12 }}</code></td>
+            <td>
+              {% if f.zip is none %}
+                <span class="badge">—</span>
+              {% else %}
+                {% if f.zip.bad %}
+                  <span class="badge zip-bad">Corrompido</span>
+                {% elif f.zip.empty %}
+                  <span class="badge zip-warn">Vazio</span>
+                {% else %}
+                  <span class="badge zip-ok">{{ f.zip.count }} itens</span>
+                {% endif %}
+              {% endif %}
+            </td>
+            <td class="actions"><a href="{{ url_for('download', filename=f.name) }}">Baixar</a></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="muted">Nenhum arquivo ainda. Suba algo em <code>/upload</code> (se habilitado) ou <code>git add files/</code>.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>
