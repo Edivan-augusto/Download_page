@@ -46,3 +46,7 @@ requirements.txt # dependências
 - Baixe um arquivo → o navegador deve baixar e o SHA (12) exibido deve mudar se o arquivo mudar.
 
 Boa distribuição! 🧰
+
+
+### Nota
+- **GET /upload é público** (exibe o formulário). O **POST /upload** exige token quando `UPLOAD_TOKEN` estiver definido.

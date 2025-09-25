@@ -102,9 +102,8 @@ def download(filename):
 
 @app.get('/upload')
 def upload_form():
-    if not _check_upload_auth(request):
-        return abort(401, description='Missing or invalid UPLOAD_TOKEN')
-    return render_template('upload.html')
+    # GET da página de upload é público; o token (se exigido) será verificado no POST
+    return render_template('upload.html', requires_token=bool(UPLOAD_TOKEN))
 
 @app.post('/upload')
 def upload_post():

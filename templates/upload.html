@@ -23,11 +23,18 @@
   <main>
     <div class="card">
       <h2>Upload</h2>
+      {% if requires_token %}
+      <p class="muted">Este servidor exige <strong>UPLOAD_TOKEN</strong>. Informe abaixo.</p>
+      {% else %}
+      <p class="muted">Token não exigido neste servidor.</p>
+      {% endif %}
       <form method="post" enctype="multipart/form-data">
         <label for="file">Arquivo</label>
         <input type="file" name="file" id="file" required />
-        <label for="token">Token (se exigido pelo servidor)</label>
-        <input type="text" name="token" id="token" placeholder="UPLOAD_TOKEN" />
+        {% if requires_token %}
+        <label for="token">Token</label>
+        <input type="text" name="token" id="token" placeholder="UPLOAD_TOKEN" required />
+        {% endif %}
         <div style="margin-top:12px;">
           <button type="submit">Enviar</button>
           <a href="/">Voltar</a>
